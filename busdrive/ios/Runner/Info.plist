@@ -50,7 +50,7 @@
 	<true/>
 
 	<key>GMSApiKey</key>
-	<string>AIzaSyAw_JKxikQSCVB_QccweBoxrmKitqptLJs</string>
+	<string>API_KEY</string>
 
 	<key>NSLocationWhenInUseUsageDescription</key>
 <string>We need your location to show your current location.</string>
