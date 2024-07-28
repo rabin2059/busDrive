@@ -42,7 +42,7 @@ class _GetStartedState extends State<GetStarted> {
               ),
             ),
             Positioned(
-              top: 548,
+              top: 548.h,
               child: SizedBox(
                 width: 393.w,
                 child: Column(

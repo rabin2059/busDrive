@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:busderive/Screens/map_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -85,8 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text(
                         'Search For Your',
                         style: GoogleFonts.roboto(
-                            textStyle: TextStyle(
-                                fontSize: 32.sp, fontWeight: FontWeight.w600)),
+                          textStyle: TextStyle(
+                            fontSize: 32.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
@@ -94,10 +99,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text(
                         'Route',
                         style: GoogleFonts.roboto(
-                            textStyle: TextStyle(
-                                fontSize: 36.sp,
-                                fontWeight: FontWeight.w900,
-                                color: const Color(0xFFFF725E))),
+                          textStyle: TextStyle(
+                            fontSize: 36.sp,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFFFF725E),
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -107,8 +114,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 159.h,
                       width: 315.w,
                       decoration: BoxDecoration(
-                          color: const Color(0xDBDBDBEC),
-                          borderRadius: BorderRadius.circular(20)),
+                        color: const Color(0xDBDBDBEC),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: Row(
@@ -118,13 +126,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               padding: EdgeInsets.only(top: 13.h, left: 8.w),
                               child: Column(
                                 children: [
-                                  Image.asset('assets/location.png'),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Image.asset('assets/location.png'),
+                                  ),
                                   Image.asset('assets/-----.png'),
                                   Icon(
                                     Icons.location_on,
                                     color: const Color(0xFFFF725E),
                                     size: 28.h,
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -143,7 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       hintText: 'Your Location',
                                       hintStyle: const TextStyle(
-                                          color: Color(0xFFFF725E)),
+                                        color: Color(0xFFFF725E),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -163,12 +175,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       hintText: 'Destination',
                                       hintStyle: const TextStyle(
-                                          color: Color(0xFFFF725E)),
+                                        color: Color(0xFFFF725E),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -177,7 +190,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 23.h,
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const MapScreen(
+                            initialPosition: LatLng(37.4223, -122.0848),
+                          ),
+                        ));
+                      },
                       child: Container(
                         width: 329.w,
                         height: 55.h,
@@ -186,27 +205,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.search,
-                              color: Colors.white,
-                            ),
-                            Text(
-                              'Search',
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.search,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                'Search',
+                                style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.w800,
-                                    color: Colors.white),
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        )),
+                            ],
+                          ),
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
