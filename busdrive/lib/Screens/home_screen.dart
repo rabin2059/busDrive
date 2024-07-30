@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _getCurrentLocation() async {
+  Future<void> _getCurrentLocation(bool fromIcon) async {
     // Check if location services are enabled
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -135,6 +135,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Fetch the address using the coordinates
       await _getAddressFromCoordinates(position);
+
+      // Navigate to the map screen if called from the icon
+      if (fromIcon) {
+        _navigateToMapScreen();
+      }
     } catch (e) {
       print("Error getting location: $e");
     }
@@ -162,16 +167,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToMapScreen() {
-    if (_currentPosition != null && _destinationPosition != null) {
+    if (_currentPosition != null) {
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => MapScreen(
           initialPosition:
               LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          destination: _destinationPosition!,
+          destination: _destinationPosition != null
+              ? LatLng(_destinationPosition!.latitude,
+                  _destinationPosition!.longitude)
+              : null,
         ),
       ));
     } else {
-      print("Current location or destination not available.");
+      print("Current location not available.");
     }
   }
 
@@ -189,6 +197,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Image.asset('assets/map.png'),
               ),
             ),
+          Positioned(
+            top: 340.h,
+            right: 16.w,
+            child: Container(
+              height: 37.h,
+              width: 37.h,
+              decoration: BoxDecoration(
+                color: Color(0xFFFF725E),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: IconButton(
+                  onPressed: () {
+                    _getCurrentLocation(true); // Called from the map icon
+                  },
+                  icon: const Icon(Icons.map, color: Colors.white),
+                ),
+              ),
+            ),
+          ),
           if (!isFocused)
             Positioned(
               top: 47.h,
@@ -290,7 +318,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   children: [
                                     GestureDetector(
-                                      onTap: _getCurrentLocation,
+                                      onTap: () {
+                                        _getCurrentLocation(false); // Called from the location.png image
+                                      },
                                       child: ColorFiltered(
                                         colorFilter: const ColorFilter.mode(
                                           Colors.blue,

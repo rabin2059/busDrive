@@ -4,12 +4,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapScreen extends StatefulWidget {
   final LatLng initialPosition;
-  final LatLng destination;
+  final LatLng? destination;
 
   const MapScreen({
     super.key,
     required this.initialPosition,
-    required this.destination,
+    this.destination,
   });
 
   @override
@@ -17,17 +17,21 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
   @override
   Widget build(BuildContext context) {
+    LatLng center = widget.destination != null
+        ? LatLng(
+            (widget.initialPosition.latitude + widget.destination!.latitude) / 2,
+            (widget.initialPosition.longitude + widget.destination!.longitude) / 2,
+          )
+        : widget.initialPosition;
+
     return Scaffold(
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
-          target: LatLng(
-            (widget.initialPosition.latitude + widget.destination.latitude) / 2,
-            (widget.initialPosition.longitude + widget.destination.longitude) / 2,
-          ),
+          target: center,
           zoom: 13,
         ),
         markers: {
@@ -35,14 +39,17 @@ class _MapScreenState extends State<MapScreen> {
             markerId: const MarkerId('initialPosition'),
             position: widget.initialPosition,
           ),
-          Marker(
-            markerId: const MarkerId('destination'),
-            position: widget.destination,
-          ),
+          if (widget.destination != null)
+            Marker(
+              markerId: const MarkerId('destination'),
+              position: widget.destination!,
+            ),
         },
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
-          _moveCameraToBounds();
+          if (widget.destination != null) {
+            _moveCameraToBounds();
+          }
         },
       ),
     );
@@ -52,20 +59,20 @@ class _MapScreenState extends State<MapScreen> {
     final GoogleMapController controller = await _controller.future;
     LatLngBounds bounds = LatLngBounds(
       southwest: LatLng(
-        widget.initialPosition.latitude < widget.destination.latitude
+        widget.initialPosition.latitude < widget.destination!.latitude
             ? widget.initialPosition.latitude
-            : widget.destination.latitude,
-        widget.initialPosition.longitude < widget.destination.longitude
+            : widget.destination!.latitude,
+        widget.initialPosition.longitude < widget.destination!.longitude
             ? widget.initialPosition.longitude
-            : widget.destination.longitude,
+            : widget.destination!.longitude,
       ),
       northeast: LatLng(
-        widget.initialPosition.latitude > widget.destination.latitude
+        widget.initialPosition.latitude > widget.destination!.latitude
             ? widget.initialPosition.latitude
-            : widget.destination.latitude,
-        widget.initialPosition.longitude > widget.destination.longitude
+            : widget.destination!.latitude,
+        widget.initialPosition.longitude > widget.destination!.longitude
             ? widget.initialPosition.longitude
-            : widget.destination.longitude,
+            : widget.destination!.longitude,
       ),
     );
 
