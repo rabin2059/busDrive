@@ -1,9 +1,16 @@
-import 'package:busderive/Screens/map_screen.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart'; // Import geolocator package
+import 'package:permission_handler/permission_handler.dart';
+
+import 'map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,226 +20,449 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final searchController = TextEditingController();
+  final locationController =
+      TextEditingController(); // Add a controller for location
+  final String token = '1234567890';
+  var uuid = const Uuid();
+  List<dynamic> locationsList = [];
+  bool isFocused = false;
+  Position? _currentPosition; // Variable to store current location
+  LatLng? _destinationPosition; // Variable to store destination position
+
+  @override
+  void initState() {
+    searchController.addListener(() {
+      _onChange();
+    });
+    super.initState();
+  }
+
+  _onChange() {
+    placeSuggestion(searchController.text);
+  }
+
+  void placeSuggestion(String input) async {
+    const String apiKey = "AIzaSyAw_JKxikQSCVB_QccweBoxrmKitqptLJs";
+    try {
+      String baseUrl =
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+      String request = '$baseUrl?input=$input&key=$apiKey&sessiontoken=$token';
+      var response = await http.get(Uri.parse(request));
+      var data = json.decode(response.body);
+      if (kDebugMode) {
+        print(data);
+      }
+      if (response.statusCode == 200) {
+        setState(() {
+          locationsList = data['predictions'];
+        });
+      } else {
+        throw Exception("Fail to load");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void _handleLocationSelected(String description) async {
+    setState(() {
+      searchController.text = description;
+      isFocused = false; // Hide the overlay when a location is selected
+    });
+    FocusScope.of(context).unfocus(); // Dismiss the keyboard
+
+    // Fetch the coordinates of the selected address
+    await _getCoordinatesFromAddress(description);
+  }
+
+  Future<void> _getCoordinatesFromAddress(String address) async {
+    const String apiKey = "AIzaSyAw_JKxikQSCVB_QccweBoxrmKitqptLJs";
+    try {
+      String baseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
+      String request = '$baseUrl?address=$address&key=$apiKey';
+      var response = await http.get(Uri.parse(request));
+      var data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        double lat = data['results'][0]['geometry']['location']['lat'];
+        double lng = data['results'][0]['geometry']['location']['lng'];
+        setState(() {
+          _destinationPosition = LatLng(lat, lng);
+        });
+      } else {
+        throw Exception("Failed to load coordinates");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    // Check if location services are enabled
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, show a message to the user
+      print("Location services are disabled.");
+      return;
+    }
+
+    // Check location permission
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      // Request location permission
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permission denied, show a message to the user
+        print("Location permission denied.");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permission denied forever, show a message to the user
+      print("Location permission permanently denied.");
+      return;
+    }
+
+    // If we have permission, get the current location
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      setState(() {
+        _currentPosition = position;
+      });
+
+      // Fetch the address using the coordinates
+      await _getAddressFromCoordinates(position);
+    } catch (e) {
+      print("Error getting location: $e");
+    }
+  }
+
+  Future<void> _getAddressFromCoordinates(Position position) async {
+    const String apiKey = "AIzaSyAw_JKxikQSCVB_QccweBoxrmKitqptLJs";
+    try {
+      String baseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
+      String request =
+          '$baseUrl?latlng=${position.latitude},${position.longitude}&key=$apiKey';
+      var response = await http.get(Uri.parse(request));
+      var data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        String address = data['results'][0]['formatted_address'];
+        setState(() {
+          locationController.text = address;
+        });
+      } else {
+        throw Exception("Failed to load address");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void _navigateToMapScreen() {
+    if (_currentPosition != null && _destinationPosition != null) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => MapScreen(
+          initialPosition:
+              LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+          destination: _destinationPosition!,
+        ),
+      ));
+    } else {
+      print("Current location or destination not available.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned(
-            top: 0.h,
-            child: SizedBox(
-              height: 443.h,
-              width: 393.w,
-              child: Image.asset('assets/map.png'),
-            ),
-          ),
-          Positioned(
-            top: 47.h,
-            left: 39.w,
-            child: Container(
-              height: 40.h,
-              width: 315.w,
-              decoration: BoxDecoration(
-                color: const Color(0xB3F9F9F9),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Trevo",
-                      style: GoogleFonts.roboto(
-                        textStyle: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20.sp,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          CupertinoIcons.bell_fill,
-                          color: Color(0xFFFF725E),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+          if (!isFocused)
+            Positioned(
+              top: 0.h,
+              child: SizedBox(
+                height: 443.h,
+                width: 393.w,
+                child: Image.asset('assets/map.png'),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 0.h,
-            child: Container(
-              height: 467.h,
-              width: 393.w,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50),
-                  topRight: Radius.circular(50),
+          if (!isFocused)
+            Positioned(
+              top: 47.h,
+              left: 39.w,
+              child: Container(
+                height: 40.h,
+                width: 315.w,
+                decoration: BoxDecoration(
+                  color: const Color(0xB3F9F9F9),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 39.w, right: 39.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 20.w),
-                      child: Text(
-                        'Search For Your',
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Trevo",
                         style: GoogleFonts.roboto(
                           textStyle: TextStyle(
-                            fontSize: 32.sp,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20.sp,
+                            color: Colors.black,
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 20.w),
-                      child: Text(
-                        'Route',
-                        style: GoogleFonts.roboto(
-                          textStyle: TextStyle(
-                            fontSize: 36.sp,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFFFF725E),
+                      Center(
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            CupertinoIcons.bell_fill,
+                            color: Color(0xFFFF725E),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Container(
-                      height: 159.h,
-                      width: 315.w,
-                      decoration: BoxDecoration(
-                        color: const Color(0xDBDBDBEC),
-                        borderRadius: BorderRadius.circular(20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          if (!isFocused)
+            Positioned(
+              bottom: 0.h,
+              child: Container(
+                height: 467.h,
+                width: 393.w,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    topRight: Radius.circular(50),
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(top: 20.h, left: 39.w, right: 39.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20.w),
+                        child: Text(
+                          'Search For Your',
+                          style: GoogleFonts.roboto(
+                            textStyle: TextStyle(
+                              fontSize: 32.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 13.h, left: 8.w),
-                              child: Column(
+                      Padding(
+                        padding: EdgeInsets.only(left: 20.w),
+                        child: Text(
+                          'Route',
+                          style: GoogleFonts.roboto(
+                            textStyle: TextStyle(
+                              fontSize: 36.sp,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFFFF725E),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Container(
+                        height: 159.h,
+                        width: 315.w,
+                        decoration: BoxDecoration(
+                          color: const Color(0xDBDBDBEC),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 13.h, left: 8.w),
+                                child: Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: _getCurrentLocation,
+                                      child: ColorFiltered(
+                                        colorFilter: const ColorFilter.mode(
+                                          Colors.blue,
+                                          BlendMode.srcIn,
+                                        ),
+                                        child:
+                                            Image.asset('assets/location.png'),
+                                      ),
+                                    ),
+                                    Image.asset('assets/-----.png'),
+                                    Icon(
+                                      Icons.location_on,
+                                      color: const Color(0xFFFF725E),
+                                      size: 28.h,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Column(
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Image.asset('assets/location.png'),
+                                  SizedBox(
+                                    width: 216.w,
+                                    height: 48.h,
+                                    child: TextFormField(
+                                      controller: locationController,
+                                      decoration: InputDecoration(
+                                        fillColor: Colors.white,
+                                        filled: true,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        hintText: 'Your Location',
+                                      ),
+                                      readOnly: true,
+                                    ),
                                   ),
-                                  Image.asset('assets/-----.png'),
-                                  Icon(
-                                    Icons.location_on,
-                                    color: const Color(0xFFFF725E),
-                                    size: 28.h,
+                                  const Divider(),
+                                  SizedBox(
+                                    width: 216.w,
+                                    height: 48.h,
+                                    child: TextFormField(
+                                      controller: searchController,
+                                      decoration: InputDecoration(
+                                        fillColor: Colors.white,
+                                        filled: true,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        hintText: 'Enter Destination',
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          isFocused = true;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ],
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                SizedBox(
-                                  width: 216.w,
-                                  height: 48.h,
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      hintText: 'Your Location',
-                                      hintStyle: const TextStyle(
-                                        color: Color(0xFFFF725E),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 14.h,
-                                ),
-                                SizedBox(
-                                  width: 216.w,
-                                  height: 48.h,
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      hintText: 'Destination',
-                                      hintStyle: const TextStyle(
-                                        color: Color(0xFFFF725E),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 23.h,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const MapScreen(
-                            initialPosition: LatLng(37.4223, -122.0848),
-                          ),
-                        ));
-                      },
-                      child: Container(
-                        width: 329.w,
-                        height: 55.h,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF725E),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.search,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                'Search',
-                                style: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
                         ),
                       ),
+                      SizedBox(height: 30.h),
+                      if (!isFocused)
+                        Center(
+                          child: Container(
+                            height: 55.h,
+                            width: 236.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              color: const Color(0xFFFF725E),
+                            ),
+                            child: MaterialButton(
+                              onPressed: _navigateToMapScreen,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Search",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  const Icon(
+                                    Icons.search,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          if (isFocused)
+            Positioned(
+              top: 10.h,
+              left: 15.w,
+              right: 15.w,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                        color: const Color(0xDBDBDBEC),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 10.w, right: 10.w),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back),
+                              onPressed: () {
+                                setState(() {
+                                  isFocused = false;
+                                });
+                              },
+                            ),
+                            Expanded(
+                              child: TextField(
+                                controller: searchController,
+                                autofocus: true,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Search",
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                searchController.clear();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: 400.h,
+                      color: Colors.white,
+                      child: ListView.builder(
+                        itemCount: locationsList.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(locationsList[index]['description']),
+                            onTap: () => _handleLocationSelected(
+                                locationsList[index]['description']),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
