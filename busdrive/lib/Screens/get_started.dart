@@ -11,6 +11,7 @@ class GetStarted extends StatefulWidget {
 }
 
 class _GetStartedState extends State<GetStarted> {
+  var color = Color(0xFFFF725E);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +84,7 @@ class _GetStartedState extends State<GetStarted> {
                         width: 329.w,
                         height: 55.h,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF725E),
+                          color: color,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(

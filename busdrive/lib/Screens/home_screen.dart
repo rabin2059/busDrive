@@ -8,10 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart'; // Import geolocator package
-import 'package:permission_handler/permission_handler.dart';
-
 import 'map_screen.dart';
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -138,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Navigate to the map screen if called from the icon
       if (fromIcon) {
-        _navigateToMapScreen();
+        _navigateToMapScreen(destination: null);
       }
     } catch (e) {
       print("Error getting location: $e");
@@ -166,16 +163,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _navigateToMapScreen() {
+  void _navigateToMapScreen({LatLng? destination}) {
     if (_currentPosition != null) {
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => MapScreen(
           initialPosition:
               LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          destination: _destinationPosition != null
-              ? LatLng(_destinationPosition!.latitude,
-                  _destinationPosition!.longitude)
-              : null,
+          destination: destination,
         ),
       ));
     } else {
@@ -204,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 37.h,
               width: 37.h,
               decoration: BoxDecoration(
-                color: Color(0xFFFF725E),
+                color: const Color(0xFFFF725E),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Center(
@@ -319,7 +313,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        _getCurrentLocation(false); // Called from the location.png image
+                                        _getCurrentLocation(
+                                            false); // Called from the location.png image
                                       },
                                       child: ColorFiltered(
                                         colorFilter: const ColorFilter.mode(
@@ -355,11 +350,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                           borderSide: BorderSide.none,
                                         ),
                                         hintText: 'Your Location',
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 10.h, horizontal: 10.w),
                                       ),
                                       readOnly: true,
                                     ),
                                   ),
-                                  const Divider(),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
                                   SizedBox(
                                     width: 216.w,
                                     height: 48.h,
@@ -374,6 +373,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           borderSide: BorderSide.none,
                                         ),
                                         hintText: 'Enter Destination',
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 10.h, horizontal: 10.w),
                                       ),
                                       onTap: () {
                                         setState(() {
@@ -399,7 +400,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: const Color(0xFFFF725E),
                             ),
                             child: MaterialButton(
-                              onPressed: _navigateToMapScreen,
+                              onPressed: () => _navigateToMapScreen(
+                                destination: _destinationPosition,
+                              ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
