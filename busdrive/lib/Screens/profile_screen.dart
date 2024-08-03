@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -70,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Positioned(
               top: 271.h,
-              child: Container(
+              child: SizedBox(
                 height: 70.h,
                 width: MediaQuery.of(context).size.width,
                 child: Center(
@@ -95,19 +96,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
             right: 17.w,
             left: 17.w,
             child: Container(
-              height: 455.h,
-              width: 360.w,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFF725E),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                height: 455.h,
+                width: 360.w,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFBDB3),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                 ),
-              ),
-            ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 37.w, right: 32.w, top: 15.h),
+                  child: Column(
+                    children: [
+                      Navi('Personal', Icons.person),
+                      SizedBox(height: 28.h,),
+                      Navi('General', FontAwesomeIcons.sliders),
+                      SizedBox(height: 28.h,),
+                      Navi('Help', Icons.help),
+                      SizedBox(height: 28.h,),
+                      Navi('Rate Us', Icons.star),
+                      SizedBox(height: 28.h,),
+                      Navi('Log Out', Icons.logout),
+                    ],
+                  ),
+                )),
           ),
         ],
       ),
+    );
+  }
+
+  Row Navi(String text, IconData icon) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(icon),
+            const SizedBox(
+                width: 8.0), // Adds some space between the icon and the text
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const Icon(Icons.keyboard_arrow_right),
+      ],
     );
   }
 }
