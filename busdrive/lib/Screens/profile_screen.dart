@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'Logins/login.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -109,15 +111,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: EdgeInsets.only(left: 37.w, right: 32.w, top: 15.h),
                   child: Column(
                     children: [
-                      Navi('Personal', Icons.person),
-                      SizedBox(height: 28.h,),
-                      Navi('General', FontAwesomeIcons.sliders),
-                      SizedBox(height: 28.h,),
-                      Navi('Help', Icons.help),
-                      SizedBox(height: 28.h,),
-                      Navi('Rate Us', Icons.star),
-                      SizedBox(height: 28.h,),
-                      Navi('Log Out', Icons.logout),
+                      GestureDetector(child: Navi('Personal', Icons.person)),
+                      SizedBox(
+                        height: 28.h,
+                      ),
+                      GestureDetector(
+                          child: Navi('General', FontAwesomeIcons.sliders)),
+                      SizedBox(
+                        height: 28.h,
+                      ),
+                      GestureDetector(child: Navi('Help', Icons.help)),
+                      SizedBox(
+                        height: 28.h,
+                      ),
+                      GestureDetector(child: Navi('Rate Us', Icons.star)),
+                      SizedBox(
+                        height: 28.h,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Navi('Log Out', Icons.logout),
+                      )
                     ],
                   ),
                 )),
