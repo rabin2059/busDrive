@@ -56,18 +56,20 @@ class _GetStartedState extends State<GetStarted> {
                         textStyle: TextStyle(
                           fontSize: 24.sp,
                           fontWeight: FontWeight.w900,
+                          height: 1.1.h
                         ),
                       ),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(
-                      height: 5.h,
+                      height: 7.h,
                     ),
                     Text(
                       "The location of the bus you want at \n your pocket",
                       style: TextStyle(
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w600,
+                          height: 1.3.h,
                           color: const Color(0x82828282)),
                       textAlign: TextAlign.center,
                     ),

@@ -197,20 +197,22 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           Positioned(
             top: 335.h,
-            right: 16.w,
+            right: 18.w,
             child: Container(
-              height: 46.h,
-              width: 46.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF725E),
-                borderRadius: BorderRadius.circular(20),
-              ),
+              height: 42.h,
+              width: 42.h,
+              decoration: const BoxDecoration(
+                  color: Color(0xFFFF725E), shape: BoxShape.circle),
               child: Center(
                 child: IconButton(
                   onPressed: () {
                     _getCurrentLocation(true); // Called from the map icon
                   },
-                  icon: Icon(Icons.map, color: Colors.white, size: 28.h,),
+                  icon: Icon(
+                    Icons.map,
+                    color: Colors.white,
+                    size: 22.h,
+                  ),
                 ),
               ),
             ),
@@ -220,11 +222,19 @@ class _HomeScreenState extends State<HomeScreen> {
               top: 47.h,
               left: 39.w,
               child: Container(
-                height: 40.h,
+                height: 35.h,
                 width: 315.w,
                 decoration: BoxDecoration(
                   color: const Color(0xB3F9F9F9),
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white
+                          .withOpacity(0.1), // Adjust opacity for shadow effect
+                      offset: const Offset(0, 4), // Position of the shadow
+                      blurRadius: 10, // Blur effect of the shadow
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 6.w),
@@ -244,9 +254,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       Center(
                         child: IconButton(
                           onPressed: () {},
-                          icon: const Icon(
+                          icon: Icon(
                             CupertinoIcons.bell_fill,
-                            color: Color(0xFFFF725E),
+                            size: 20.w,
+                            color: const Color(0xFFFF725E),
                           ),
                         ),
                       ),
@@ -255,6 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+          // Other imports and class definition
+
           if (!isFocused)
             Positioned(
               bottom: 0.h,
@@ -275,26 +288,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(left: 20.w),
-                        child: Text(
-                          'Search For Your',
-                          style: GoogleFonts.roboto(
-                            textStyle: TextStyle(
-                              fontSize: 31.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 20.w),
-                        child: Text(
-                          'Route',
-                          style: GoogleFonts.roboto(
-                            textStyle: TextStyle(
-                              fontSize: 35.sp,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFFFF725E),
-                            ),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Search For Your ',
+                                style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                    fontSize: 31.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Route',
+                                style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                    fontSize: 35.sp,
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFFFF725E),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -306,49 +323,46 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: const Color(0xDBDBDBEC),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              top: 23.h, bottom: 23.h, right: 20.w, left: 35.w),
+                        child: Center(
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Padding(
-                                padding: EdgeInsets.only(top: 13.h, left: 8.w),
-                                child: Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        _getCurrentLocation(
-                                            false); // Called from the location.png image
-                                      },
-                                      child: ColorFiltered(
-                                        colorFilter: const ColorFilter.mode(
-                                          Colors.blue,
-                                          BlendMode.srcIn,
-                                        ),
-                                        child: Image.asset(
-                                          'assets/location.png',
-                                          height: 26.h,
-                                        ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      _getCurrentLocation(false);
+                                    },
+                                    child: ColorFiltered(
+                                      colorFilter: const ColorFilter.mode(
+                                        Colors.blue,
+                                        BlendMode.srcIn,
+                                      ),
+                                      child: Image.asset(
+                                        'assets/location.png',
+                                        height: 26.h,
                                       ),
                                     ),
-                                    Image.asset(
-                                      'assets/-----.png',
-                                      height: 33.h,
-                                    ),
-                                    Icon(
-                                      Icons.location_on,
-                                      color: const Color(0xFFFF725E),
-                                      size: 26.h,
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  Image.asset(
+                                    'assets/-----.png',
+                                    height: 33.h,
+                                  ),
+                                  Icon(
+                                    Icons.location_on,
+                                    color: const Color(0xFFFF725E),
+                                    size: 26.h,
+                                  ),
+                                ],
                               ),
+                              SizedBox(width: 16.w),
                               Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(
                                     width: 216.w,
-                                    height: 48.h,
+                                    height: 40.h,
                                     child: TextFormField(
                                       controller: locationController,
                                       decoration: InputDecoration(
@@ -361,17 +375,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         hintText: 'Your Location',
                                         contentPadding: EdgeInsets.symmetric(
-                                            vertical: 10.h, horizontal: 10.w),
+                                            vertical: 8.h, horizontal: 10.w),
                                       ),
                                       readOnly: true,
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
+                                  SizedBox(height: 10.h),
                                   SizedBox(
                                     width: 216.w,
-                                    height: 48.h,
+                                    height: 40.h,
                                     child: TextFormField(
                                       controller: searchController,
                                       decoration: InputDecoration(
@@ -384,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         hintText: 'Enter Destination',
                                         contentPadding: EdgeInsets.symmetric(
-                                            vertical: 10.h, horizontal: 10.w),
+                                            vertical: 8.h, horizontal: 10.w),
                                       ),
                                       onTap: () {
                                         setState(() {
@@ -402,35 +414,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: 28.h),
                       if (!isFocused)
                         Center(
-                          child: Container(
-                            height: 55.h,
-                            width: 236.w,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              color: const Color(0xFFFF725E),
+                          child: ElevatedButton(
+                            onPressed: () => _navigateToMapScreen(
+                              destination: _destinationPosition,
                             ),
-                            child: MaterialButton(
-                              onPressed: () => _navigateToMapScreen(
-                                destination: _destinationPosition,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color(0xFFFF725E), // Background color
+                              minimumSize: Size(236.w, 55.h), // Size
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10), // Rounded corners
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Search",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  const Icon(
-                                    Icons.search,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 10.w),
+                                Text(
+                                  "Search",
+                                  style: TextStyle(
                                     color: Colors.white,
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w800,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -439,6 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+
           if (isFocused)
             Positioned(
               top: 10.h,

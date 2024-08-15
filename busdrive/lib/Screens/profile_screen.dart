@@ -49,8 +49,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   bottom: 0,
                   right: 0,
                   child: Container(
-                    height: 35.h,
-                    width: 35.w,
+                    height: 32.h,
+                    width: 32.w,
                     decoration: BoxDecoration(
                       color: const Color(0xFFFF725E),
                       shape: BoxShape.circle,
@@ -63,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () {},
                       icon: const Icon(
                         Icons.edit,
-                        size: 19,
+                        size: 15,
                       ),
                     ),
                   ),

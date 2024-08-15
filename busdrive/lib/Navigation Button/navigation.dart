@@ -30,6 +30,26 @@ class _NavigationState extends State<Navigation> {
     });
   }
 
+  Widget _buildIconButton(
+    IconData iconData,
+    int index,
+    bool isSelected,
+  ) {
+    return Material(
+      color: Colors.transparent, // Ensure no background color is applied
+      child: IconButton(
+        onPressed: () => _onItemTapped(index),
+        icon: Icon(
+          iconData,
+          size: isSelected ? 36.h : 26.h, // Increase size when selected
+          color: isSelected ? const Color(0xFFFF725E) : Colors.grey,
+        ),
+        highlightColor: Colors.transparent, // Avoid color change on press
+        splashColor: Colors.transparent,    // Avoid splash color
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +57,8 @@ class _NavigationState extends State<Navigation> {
         children: [
           PageView(
             controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(), // Disable swipe gestures
+            physics:
+                const NeverScrollableScrollPhysics(), // Disable swipe gestures
             onPageChanged: (index) {
               setState(() {
                 _selectedIndex = index;
@@ -61,47 +82,23 @@ class _NavigationState extends State<Navigation> {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 1,
+                        spreadRadius: 0.5,
                         blurRadius: 5,
-                        offset: const Offset(0, 0), // changes position of shadow
+                        offset:
+                            const Offset(0, 0), // changes position of shadow
                       ),
-                    ], // Rounded corners
+                    ],
                   ),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 26.w),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(
-                          onPressed: () => _onItemTapped(0),
-                          icon: Icon(
-                            CupertinoIcons.bus,
-                            size: 28.h,
-                            color: _selectedIndex == 0
-                                ? const Color(0xFFFF725E)
-                                : Colors.grey,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () => _onItemTapped(1),
-                          icon: Icon(
-                            Icons.home,
-                            size: 28.h,
-                            color: _selectedIndex == 1
-                                ? const Color(0xFFFF725E)
-                                : Colors.grey,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () => _onItemTapped(2),
-                          icon: Icon(
-                            CupertinoIcons.profile_circled,
-                            size: 28.h,
-                            color: _selectedIndex == 2
-                                ? const Color(0xFFFF725E)
-                                : Colors.grey,
-                          ),
-                        ),
+                        _buildIconButton(
+                            CupertinoIcons.bus, 0, _selectedIndex == 0),
+                        _buildIconButton(Icons.home, 1, _selectedIndex == 1),
+                        _buildIconButton(CupertinoIcons.person_circle_fill, 2,
+                            _selectedIndex == 2),
                       ],
                     ),
                   ),
