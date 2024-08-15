@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart'; // Import geolocator package
 import 'map_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -188,15 +189,18 @@ class _HomeScreenState extends State<HomeScreen> {
               child: SizedBox(
                 height: 443.h,
                 width: 393.w,
-                child: Image.asset('assets/map.png'),
+                child: Image.asset(
+                  'assets/map.png',
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
           Positioned(
-            top: 340.h,
+            top: 335.h,
             right: 16.w,
             child: Container(
-              height: 37.h,
-              width: 37.h,
+              height: 46.h,
+              width: 46.h,
               decoration: BoxDecoration(
                 color: const Color(0xFFFF725E),
                 borderRadius: BorderRadius.circular(20),
@@ -206,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     _getCurrentLocation(true); // Called from the map icon
                   },
-                  icon: const Icon(Icons.map, color: Colors.white),
+                  icon: Icon(Icons.map, color: Colors.white, size: 28.h,),
                 ),
               ),
             ),
@@ -265,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.only(top: 20.h, left: 39.w, right: 39.w),
+                  padding: EdgeInsets.only(top: 27.h, left: 39.w, right: 39.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -275,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Search For Your',
                           style: GoogleFonts.roboto(
                             textStyle: TextStyle(
-                              fontSize: 32.sp,
+                              fontSize: 31.sp,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -287,14 +291,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Route',
                           style: GoogleFonts.roboto(
                             textStyle: TextStyle(
-                              fontSize: 36.sp,
+                              fontSize: 35.sp,
                               fontWeight: FontWeight.w900,
                               color: const Color(0xFFFF725E),
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 10.h),
+                      SizedBox(height: 13.h),
                       Container(
                         height: 159.h,
                         width: 315.w,
@@ -303,7 +307,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: EdgeInsets.only(
+                              top: 23.h, bottom: 23.h, right: 20.w, left: 35.w),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -321,15 +326,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Colors.blue,
                                           BlendMode.srcIn,
                                         ),
-                                        child:
-                                            Image.asset('assets/location.png'),
+                                        child: Image.asset(
+                                          'assets/location.png',
+                                          height: 26.h,
+                                        ),
                                       ),
                                     ),
-                                    Image.asset('assets/-----.png'),
+                                    Image.asset(
+                                      'assets/-----.png',
+                                      height: 33.h,
+                                    ),
                                     Icon(
                                       Icons.location_on,
                                       color: const Color(0xFFFF725E),
-                                      size: 28.h,
+                                      size: 26.h,
                                     ),
                                   ],
                                 ),
@@ -389,7 +399,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 30.h),
+                      SizedBox(height: 28.h),
                       if (!isFocused)
                         Center(
                           child: Container(
