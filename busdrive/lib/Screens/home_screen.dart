@@ -323,92 +323,88 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: const Color(0xDBDBDBEC),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    _getCurrentLocation(false);
+                                  },
+                                  child: ColorFiltered(
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.blue,
+                                      BlendMode.srcIn,
+                                    ),
+                                    child: Image.asset(
+                                      'assets/location.png',
+                                      height: 26.h,
+                                    ),
+                                  ),
+                                ),
+                                Image.asset(
+                                  'assets/-----.png',
+                                  height: 33.h,
+                                ),
+                                Icon(
+                                  Icons.location_on,
+                                  color: const Color(0xFFFF725E),
+                                  size: 26.h,
+                                ),
+                              ],
+                            ),
+                            SizedBox(width: 16.w),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 216.w,
+                                  height: 40.h,
+                                  child: TextFormField(
+                                    controller: locationController,
+                                    decoration: InputDecoration(
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      hintText: 'Your Location',
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 8.h, horizontal: 10.w),
+                                    ),
+                                    readOnly: true,
+                                  ),
+                                ),
+                                SizedBox(height: 10.h),
+                                SizedBox(
+                                  width: 216.w,
+                                  height: 40.h,
+                                  child: TextFormField(
+                                    controller: searchController,
+                                    decoration: InputDecoration(
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      hintText: 'Enter Destination',
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 8.h, horizontal: 10.w),
+                                    ),
                                     onTap: () {
-                                      _getCurrentLocation(false);
+                                      setState(() {
+                                        isFocused = true;
+                                      });
                                     },
-                                    child: ColorFiltered(
-                                      colorFilter: const ColorFilter.mode(
-                                        Colors.blue,
-                                        BlendMode.srcIn,
-                                      ),
-                                      child: Image.asset(
-                                        'assets/location.png',
-                                        height: 26.h,
-                                      ),
-                                    ),
                                   ),
-                                  Image.asset(
-                                    'assets/-----.png',
-                                    height: 33.h,
-                                  ),
-                                  Icon(
-                                    Icons.location_on,
-                                    color: const Color(0xFFFF725E),
-                                    size: 26.h,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(width: 16.w),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 216.w,
-                                    height: 40.h,
-                                    child: TextFormField(
-                                      controller: locationController,
-                                      decoration: InputDecoration(
-                                        fillColor: Colors.white,
-                                        filled: true,
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        hintText: 'Your Location',
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 8.h, horizontal: 10.w),
-                                      ),
-                                      readOnly: true,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  SizedBox(
-                                    width: 216.w,
-                                    height: 40.h,
-                                    child: TextFormField(
-                                      controller: searchController,
-                                      decoration: InputDecoration(
-                                        fillColor: Colors.white,
-                                        filled: true,
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        hintText: 'Enter Destination',
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 8.h, horizontal: 10.w),
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          isFocused = true;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(height: 28.h),
